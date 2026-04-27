@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { sendToBlockchain } from "@/lib/blockchain";
 import { connectPhantom, sendTransaction } from "@/lib/phantom";
 
 export default function AdminPage() {
@@ -115,6 +114,7 @@ async function updateStatus(id: string, status: string) {
               <p className="mt-2 text-sm text-cyan-400 break-all">
                 TX: {item.tx_hash}
               </p>
+
 
             <div className="mt-4 flex gap-3">
               <button
