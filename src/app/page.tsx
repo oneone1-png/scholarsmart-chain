@@ -37,6 +37,7 @@ export default function SmartScholarLandingPage() {
             <a href="#alur" className="hover:text-white">Alur</a>
             <a href="#transparansi" className="hover:text-white">Transparansi</a>
           </div>
+          
 
           <Button className="rounded-2xl bg-cyan-400 text-slate-950 hover:bg-cyan-300">
             Mulai Sekarang
@@ -59,9 +60,14 @@ export default function SmartScholarLandingPage() {
               Berbasis Web & Blockchain
             </div>
 
-            <h2 className="max-w-2xl text-4xl font-black leading-tight tracking-tight md:text-6xl">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-5xl font-bold"
+            >
               Penyaluran Beasiswa yang Lebih Akurat, Adil, dan Transparan.
-            </h2>
+            </motion.h1>
 
             <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
               SmartScholar membantu proses pendaftaran, seleksi, dan pelacakan beasiswa dengan sistem scoring transparan serta audit trail berbasis blockchain.
@@ -117,6 +123,35 @@ export default function SmartScholarLandingPage() {
               </CardContent>
             </Card>
           </motion.div>
+        </div>
+      </section>
+
+      <section className="mt-20">
+        <h2 className="text-3xl font-bold text-center">
+          Alur Sistem SmartScholar
+        </h2>
+
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          <div className="rounded-2xl bg-white/5 p-6 text-center">
+            <h3 className="text-xl font-bold">1. Daftar</h3>
+            <p className="mt-2 text-sm text-slate-400">
+              Pengguna mendaftar dan mengisi data beasiswa.
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-white/5 p-6 text-center">
+            <h3 className="text-xl font-bold">2. Seleksi</h3>
+            <p className="mt-2 text-sm text-slate-400">
+              Admin melakukan seleksi berdasarkan skor.
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-white/5 p-6 text-center">
+            <h3 className="text-xl font-bold">3. Transparansi</h3>
+            <p className="mt-2 text-sm text-slate-400">
+              Hasil ditampilkan di dashboard dan dapat diverifikasi.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -210,6 +245,17 @@ export default function SmartScholarLandingPage() {
             </div>
           </CardContent>
         </Card>
+      </section>
+
+        <section className="mt-20 text-center">
+        <h2 className="text-3xl font-bold">
+          Kenapa Blockchain?
+        </h2>
+
+        <p className="mt-4 max-w-2xl mx-auto text-slate-400">
+          Blockchain digunakan untuk memastikan data seleksi tidak dapat dimanipulasi 
+          dan dapat diverifikasi secara transparan.
+        </p>
       </section>
 
       {/* CTA */}
