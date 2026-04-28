@@ -3,8 +3,14 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { connectPhantom, sendTransaction } from "@/lib/phantom";
+import Navbar from "@/components/Navbar";
+import { useRouter } from "next/navigation";
 
-export default function AdminPage() {
+
+
+export default function AdminPage(){
+  const router = useRouter();
+  
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -52,18 +58,43 @@ async function updateStatus(id: string, status: string) {
     .eq("id", id);
 
     alert(`Transaksi berhasil: \n${signature}`);
+}
 
-  
-
-  }
   fetchApplications();
+}
 
-  }
-  useEffect(() => {
+
+useEffect(() => {
+  async function checkAdmin() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile || profile.role !== "admin") {
+      router.push("/login");
+      return;
+    }
+
     fetchApplications();
-  }, []);
+  }
+
+  checkAdmin();
+}, []);
 
   return (
+    <>
+    <Navbar />
     <main className="min-h-screen bg-slate-950 p-8 text-white">
       <h1 className="text-3xl font-bold">Admin Panel</h1>
 
@@ -137,5 +168,5 @@ async function updateStatus(id: string, status: string) {
         ))}
       </div>
     </main>
-  );
-}
+    </>
+  );}
