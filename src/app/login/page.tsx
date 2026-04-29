@@ -19,7 +19,7 @@ export default function LoginPage() {
 
     if (error) return alert(error.message);
 
-    router.push("/dashboard");
+    router.push("/scholarships");
   }
 
   return (

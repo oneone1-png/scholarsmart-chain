@@ -1,52 +1,58 @@
+"use client";
+
 import Link from "next/link";
-import { GraduationCap } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    async function getUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      setUser(user);
+    }
+
+    getUser();
+  }, []);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    router.push("/login");
+  }
+
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/15 text-cyan-300">
-            <GraduationCap size={24} />
-          </div>
+    <nav className="flex items-center justify-between border-b border-white/10 bg-slate-950 px-6 py-4 text-white">
+      <h1 className="font-bold">🎓 SmartScholar</h1>
 
-          <div>
-            <h1 className="text-lg font-bold text-white">SmartScholar</h1>
-            <p className="text-xs text-slate-400">
-              Scholarship Transparency System
-            </p>
-          </div>
-        </Link>
+      <div className="flex items-center gap-4">
+        <Link href="/">Home</Link>
 
-        <div className="hidden items-center gap-6 text-sm text-slate-300 md:flex">
-          <Link href="/scholarships" className="hover:text-cyan-300">
-            Beasiswa
-          </Link>
-          <Link href="/transparency" className="hover:text-cyan-300">
-            Transparansi
-          </Link>
-          <Link
-          href="/"
-          className="hover:text-cyan-300"
-        >
-          Beranda
-        </Link>
+        {user && (
+          <>
+            <Link href="/transparency">Dashboard</Link>
+            <Link href="/scholarships">Beasiswa</Link>
+          </>
+        )}
 
-        <button className="rounded-2xl bg-cyan-400 px-3 py-3 text-slate-950 hover:bg-cyan-300">
-          <Link href="/login">Loginmhs</Link>
-        </button>
-        
-        <button className="rounded-2xl bg-cyan-400 px-3 py-3 text-slate-950 hover:bg-cyan-300">
-          <Link href="/admin/login">Login</Link>
-        </button>
-        
-
-
-
-        </div>
-        
-
-       
+        {!user ? (
+          <>
+            <Link href="/login">Login</Link>
+            <Link href="/register">Register</Link>
+          </>
+        ) : (
+          <button
+            onClick={handleLogout}
+            className="rounded-xl bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-400"
+          >
+            Logout
+          </button>
+        )}
       </div>
     </nav>
   );

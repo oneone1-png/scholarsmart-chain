@@ -19,7 +19,7 @@ export default function AdminHomePage() {
               href="/dashboard"
               className="rounded-2xl border border-white/10 bg-white/5 p-6 hover:border-cyan-400/40"
             >
-              <h2 className="text-xl font-bold">Dashboard Admin</h2>
+              <h2 className="text-xl font-bold">Dashboard</h2>
               <p className="mt-2 text-sm text-slate-400">
                 Lihat ringkasan data pendaftar.
               </p>

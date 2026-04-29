@@ -3,10 +3,14 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { sendTransaction } from "@/lib/phantom";
+import { useRouter } from "next/navigation";
+import { checkAdmin } from "@/lib/adminGuard";
 
 export default function AdminApplicationsPage() {
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const [checking, setChecking] = useState(true);
 
   async function fetchApplications() {
     setLoading(true);
@@ -59,8 +63,28 @@ export default function AdminApplicationsPage() {
   }
 
   useEffect(() => {
-    fetchApplications();
-  }, []);
+  async function init() {
+    const isAdmin = await checkAdmin();
+
+    if (!isAdmin) {
+      router.replace("/admin/login");
+      return;
+    }
+
+    await fetchApplications();
+    setChecking(false);
+  }
+
+  init();
+}, [router]);
+
+if (checking) {
+  return (
+    <main className="min-h-screen bg-slate-950 p-8 text-white">
+      Memeriksa akses admin...
+    </main>
+  );
+}
 
   return (
     <>

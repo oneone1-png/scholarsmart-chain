@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
+
 import { supabase } from "@/lib/supabase";
 
 export default function RegisterPage() {
@@ -56,7 +56,7 @@ export default function RegisterPage() {
 
   return (
     <>
-      <Navbar />
+      
 
       <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6 text-white">
         <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">

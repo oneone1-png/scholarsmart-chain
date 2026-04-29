@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Users,
   WalletCards,
+  Link,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,10 +39,14 @@ export default function SmartScholarLandingPage() {
             <a href="#transparansi" className="hover:text-white">Transparansi</a>
           </div>
           
-
+<div className=" flex flex-col gap-2 sm:flex-row">
           <Button className="rounded-2xl bg-cyan-400 text-slate-950 hover:bg-cyan-300">
-            Mulai Sekarang
+            <a href="/register">Sign In</a>
           </Button>
+         <Button className="rounded-2xl bg-cyan-400 text-slate-950 hover:bg-cyan-300">
+            <a href="/login">Log In</a>
+          </Button>
+          </div>
         </div>
       </nav>
 
@@ -75,7 +80,7 @@ export default function SmartScholarLandingPage() {
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Button className="h-12 rounded-2xl bg-cyan-400 px-6 text-base font-semibold text-slate-950 hover:bg-cyan-300">
-                Cari Beasiswa <ArrowRight className="ml-2" size={18} />
+               <a href="/scholarships"> Cari Beasiswa </a><ArrowRight className="ml-2" size={18} />
               </Button>
               <Button variant="outline" className="h-12 rounded-2xl border-white/15 bg-white/5 px-6 text-base text-white hover:bg-white/10">
                  <a href="/transparency">Lihat Transparansi</a> 

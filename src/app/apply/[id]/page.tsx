@@ -5,6 +5,8 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 export default function ApplyPage() {
+
+  
   const params = useParams();
   const id = params.id as string;
 
@@ -14,6 +16,7 @@ export default function ApplyPage() {
     akademik: "",
     organisasi: "",
   });
+  
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");

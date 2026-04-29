@@ -38,6 +38,8 @@ export default function TransparencyPage() {
     { name: "Pending", value: pending },
   ];
 
+  const COLORS = ["#22c55e", "#ef4444", "#eab308"];
+
   return (
     <>
       <Navbar />
@@ -74,7 +76,7 @@ export default function TransparencyPage() {
                       label
                     >
                       {chartData.map((_, index) => (
-                        <Cell key={index} />
+                        <Cell key={index} fill={COLORS[index]} />
                       ))}
                     </Pie>
                     <Tooltip />
