@@ -1,16 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { connectPhantom, sendTransaction } from "@/lib/phantom";
-import Navbar from "@/components/Navbar";
 import { useRouter } from "next/navigation";
+import Navbar from "@/components/Navbar";
+import { supabase } from "@/lib/supabase";
+import { sendTransaction } from "@/lib/phantom";
 
-
-
-export default function AdminPage(){
+export default function AdminPage() {
   const router = useRouter();
-  
+
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,7 +21,6 @@ export default function AdminPage(){
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.log("ADMIN ERROR:", error);
       alert(error.message);
       setLoading(false);
       return;
@@ -33,140 +30,148 @@ export default function AdminPage(){
     setLoading(false);
   }
 
-async function updateStatus(id: string, status: string) {
-  const { error } = await supabase
-    .from("applications")
-    .update({ status })
-    .eq("id", id);
+  async function updateStatus(id: string, status: "accepted" | "rejected") {
+    try {
+      let txHash = null;
 
-  if (error) {
-    alert(error.message);
-    return;
+      if (status === "accepted") {
+        txHash = await sendTransaction();
+      }
+
+      const { error } = await supabase
+        .from("applications")
+        .update({
+          status,
+          tx_hash: txHash,
+        })
+        .eq("id", id);
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      if (txHash) {
+        alert(`Transaksi berhasil:\n${txHash}`);
+      }
+
+      fetchApplications();
+    } catch (error) {
+      console.error(error);
+      alert("Transaksi gagal");
+    }
   }
 
-  // connect wallet
-  await connectPhantom();
+  useEffect(() => {
+    async function checkAdmin() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-  // kirim transaksi ke Solana
-  const signature = await sendTransaction(id, status);
+      if (!user) {
+        router.push("/login");
+        return;
+      }
 
-  if(signature){
-    //simpan ke database
-    await supabase
-    .from("applications")
-    .update({tx_hash: signature})
-    .eq("id", id);
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
 
-    alert(`Transaksi berhasil: \n${signature}`);
-}
+      if (!profile || profile.role !== "admin") {
+        router.push("/login");
+        return;
+      }
 
-  fetchApplications();
-}
-
-
-useEffect(() => {
-  async function checkAdmin() {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      router.push("/login");
-      return;
+      fetchApplications();
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (!profile || profile.role !== "admin") {
-      router.push("/login");
-      return;
-    }
-
-    fetchApplications();
-  }
-
-  checkAdmin();
-}, []);
+    checkAdmin();
+  }, [router]);
 
   return (
     <>
-    <Navbar />
-    <main className="min-h-screen bg-slate-950 p-8 text-white">
-      <h1 className="text-3xl font-bold">Admin Panel</h1>
+      <Navbar />
 
-      {loading && <p className="mt-8 text-slate-400">Memuat data...</p>}
+      <main className="min-h-screen bg-slate-950 p-8 text-white">
+        <h1 className="text-3xl font-bold">Admin Panel</h1>
 
-      {!loading && applications.length === 0 && (
-        <p className="mt-8 text-slate-400">
-          Belum ada data pendaftaran.
-        </p>
-      )}
+        {loading && <p className="mt-8 text-slate-400">Memuat data...</p>}
 
-      <div className="mt-8 space-y-4">
-        {applications.map((item) => (
-          <div
-            key={item.id}
-            className="rounded-2xl border border-white/10 bg-white/5 p-6"
-          >
-            <p>
-              <b>Nama:</b> {item.name}
-            </p>
+        {!loading && applications.length === 0 && (
+          <p className="mt-8 text-slate-400">
+            Belum ada data pendaftaran.
+          </p>
+        )}
 
-            <p>
-              <b>Skor Total:</b>{" "}
-              <span className="text-cyan-300">{item.total_score}</span>
-            </p>
-
-            <p>
-              <b>Status:</b>{" "}
-              <span
-                className={
-                  item.status === "accepted"
-                    ? "text-green-400"
-                    : item.status === "rejected"
-                    ? "text-red-400"
-                    : "text-yellow-400"
-                }
-              >
-                {item.status}
-              </span>
-            </p>
-            {item.tx_hash && (
-               <a href={`https://explorer.solana.com/tx/${item.tx_hash}?cluster=devnet`}
-                   target="_blank" className="text-cyan-400 underline text-sm"
+        <div className="mt-8 space-y-4">
+          {applications.map((item) => (
+            <div
+              key={item.id}
+              className="rounded-2xl border border-white/10 bg-white/5 p-6"
             >
-               Lihat di Blockchain
-                     </a>
-                  )}
-              <p className="mt-2 text-sm text-cyan-400 break-all">
-                TX: {item.tx_hash}
+              <p>
+                <b>Nama:</b> {item.name}
               </p>
 
+              <p>
+                <b>Skor Total:</b>{" "}
+                <span className="text-cyan-300">{item.total_score}</span>
+              </p>
 
-            <div className="mt-4 flex gap-3">
-              <button
-                type="button"
-                onClick={() => updateStatus(item.id, "accepted")}
-                className="rounded-xl bg-green-500 px-4 py-2 font-semibold text-white"
-              >
-                Terima
-              </button>
+              <p>
+                <b>Status:</b>{" "}
+                <span
+                  className={
+                    item.status === "accepted"
+                      ? "text-green-400"
+                      : item.status === "rejected"
+                      ? "text-red-400"
+                      : "text-yellow-400"
+                  }
+                >
+                  {item.status}
+                </span>
+              </p>
 
-              <button
-                type="button"
-                onClick={() => updateStatus(item.id, "rejected")}
-                className="rounded-xl bg-red-500 px-4 py-2 font-semibold text-white"
-              >
-                Tolak
-              </button>
+              {item.tx_hash && (
+                <div className="mt-2">
+                  <p className="break-all text-sm text-cyan-400">
+                    TX: {item.tx_hash}
+                  </p>
+
+                  <a
+                    href={`https://explorer.solana.com/tx/${item.tx_hash}?cluster=devnet`}
+                    target="_blank"
+                    className="text-sm text-cyan-400 underline"
+                  >
+                    Lihat di Blockchain
+                  </a>
+                </div>
+              )}
+
+              <div className="mt-4 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => updateStatus(item.id, "accepted")}
+                  className="rounded-xl bg-green-500 px-4 py-2 font-semibold text-white"
+                >
+                  Terima
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => updateStatus(item.id, "rejected")}
+                  className="rounded-xl bg-red-500 px-4 py-2 font-semibold text-white"
+                >
+                  Tolak
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-    </main>
+          ))}
+        </div>
+      </main>
     </>
-  );}
+  );
+}

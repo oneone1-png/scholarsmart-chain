@@ -78,7 +78,7 @@ export default function SmartScholarLandingPage() {
                 Cari Beasiswa <ArrowRight className="ml-2" size={18} />
               </Button>
               <Button variant="outline" className="h-12 rounded-2xl border-white/15 bg-white/5 px-6 text-base text-white hover:bg-white/10">
-                Lihat Transparansi
+                 <a href="/transparency">Lihat Transparansi</a> 
               </Button>
             </div>
           </motion.div>
@@ -268,7 +268,7 @@ export default function SmartScholarLandingPage() {
           <Button className="mt-8 h-12 rounded-2xl bg-slate-950 px-6 text-white hover:bg-slate-800">
             Mulai Bangun Sistem
           </Button>
-          <Button asChild>
+          <Button className="mt-8 h-12 rounded-2xl bg-slate-950 px-6 text-white hover:bg-slate-800">
   <a href="/transparency">Lihat Transparansi</a>
 </Button>
         </div>

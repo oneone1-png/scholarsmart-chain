@@ -25,17 +25,28 @@ export default function Navbar() {
           <Link href="/transparency" className="hover:text-cyan-300">
             Transparansi
           </Link>
-          <Link href="/admin" className="hover:text-cyan-300">
-            Admin
-          </Link>
-        </div>
-
-        <Link
-          href="/scholarships"
-          className="rounded-2xl bg-cyan-400 px-5 py-2 text-sm font-bold text-slate-950 hover:bg-cyan-300"
+          <Link
+          href="/"
+          className="hover:text-cyan-300"
         >
-          Mulai
+          Beranda
         </Link>
+
+        <button className="rounded-2xl bg-cyan-400 px-3 py-3 text-slate-950 hover:bg-cyan-300">
+          <Link href="/login">Loginmhs</Link>
+        </button>
+        
+        <button className="rounded-2xl bg-cyan-400 px-3 py-3 text-slate-950 hover:bg-cyan-300">
+          <Link href="/admin/login">Login</Link>
+        </button>
+        
+
+
+
+        </div>
+        
+
+       
       </div>
     </nav>
   );

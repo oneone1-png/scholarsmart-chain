@@ -1,90 +1,52 @@
-import {
-  Connection,
-  clusterApiUrl,
-  Transaction,
-  TransactionInstruction,
-  PublicKey,
-} from "@solana/web3.js";
+import { Connection, clusterApiUrl, Transaction, SystemProgram, PublicKey } from "@solana/web3.js";
 
-export async function connectPhantom() {
+export async function sendTransaction() {
   const provider = (window as any).solana;
 
   if (!provider || !provider.isPhantom) {
-    alert("Install Phantom wallet dulu");
+    alert("Phantom tidak ditemukan");
     return null;
   }
 
-  const resp = await provider.connect();
-  return resp.publicKey.toString();
-}
+  await provider.connect();
 
-export async function sendTransaction(applicationId: string, status: string) {
-  try {
-    const provider = (window as any).solana;
+  const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
-    if (!provider || !provider.isPhantom) {
-      alert("Install Phantom wallet dulu");
-      return null;
-    }
+  const fromPubkey = provider.publicKey;
 
-    await provider.connect();
-
-    const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-    const publicKey = provider.publicKey;
-
-    const balance = await connection.getBalance(publicKey);
-    console.log("BALANCE:", balance);
-
-    if (balance <= 0) {
-      alert("Saldo Devnet SOL masih kosong.");
-      return null;
-    }
-
-    const memoProgramId = new PublicKey(
-      "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"
-    );
-
-    const memoText = `SmartScholar | Application: ${applicationId} | Status: ${status}`;
-
-    const transaction = new Transaction().add(
-      new TransactionInstruction({
-        keys: [
-          {
-            pubkey: publicKey,
-            isSigner: true,
-            isWritable: false,
-          },
-        ],
-        programId: memoProgramId,
-        data: Buffer.from(memoText, "utf8"),
-      })
-    );
-
-    transaction.feePayer = publicKey;
-
-    const { blockhash, lastValidBlockHeight } =
-      await connection.getLatestBlockhash();
-
-    transaction.recentBlockhash = blockhash;
-
-    const signed = await provider.signTransaction(transaction);
-
-    const signature = await connection.sendRawTransaction(signed.serialize());
-
-    await connection.confirmTransaction(
-      {
-        signature,
-        blockhash,
-        lastValidBlockHeight,
-      },
-      "confirmed"
-    );
-
-    console.log("SUCCESS TX:", signature);
-    return signature;
-  } catch (error) {
-    console.error("TX ERROR:", error);
-    alert("Transaksi gagal. Cek Console browser.");
+  if (!fromPubkey) {
+    alert("Wallet belum terhubung");
     return null;
   }
+
+  const transaction = new Transaction().add(
+    SystemProgram.transfer({
+      fromPubkey,
+      toPubkey: fromPubkey,
+      lamports: 1000,
+    })
+  );
+
+  const { blockhash, lastValidBlockHeight } =
+    await connection.getLatestBlockhash();
+
+  transaction.feePayer = fromPubkey;
+  transaction.recentBlockhash = blockhash;
+
+  const signed = await provider.signTransaction(transaction);
+
+  const signature = await connection.sendRawTransaction(
+    signed.serialize()
+  );
+
+  await connection.confirmTransaction(
+    {
+      signature,
+      blockhash,
+      lastValidBlockHeight,
+    },
+    "confirmed"
+  );
+
+  return signature;
 }
